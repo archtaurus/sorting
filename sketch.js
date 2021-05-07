@@ -1,6 +1,6 @@
 const WINDOW_WIDTH = 800
 const WINDOW_HEIGHT = 400
-const TOTAL = 40
+const TOTAL = 20
 const COLUMN_WIDTH = WINDOW_WIDTH / TOTAL
 const NUMBERS = new Array(TOTAL)
 let sorter, oscillator, start_time
@@ -8,7 +8,6 @@ let sorter, oscillator, start_time
 function setup() {
     createCanvas(WINDOW_WIDTH, WINDOW_HEIGHT)
     oscillator = new p5.Oscillator('sine')
-    // frameRate(10)
     textAlign(CENTER)
     textSize(8)
     play()
