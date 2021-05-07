@@ -1,6 +1,6 @@
 const WINDOW_WIDTH = 800
 const WINDOW_HEIGHT = 400
-const TOTAL = 20
+const TOTAL = 40
 const COLUMN_WIDTH = WINDOW_WIDTH / TOTAL
 const NUMBERS = new Array(TOTAL)
 let sorter, oscillator, start_time
