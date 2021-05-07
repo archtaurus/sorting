@@ -10,6 +10,11 @@
                 padding: 0px;
                 box-sizing: border-box;
             }
+            button {
+                padding: 0.5rem;
+                border-radius: 0.5rem;
+                cursor: pointer;
+            }
             body {
                 background-color: #333;
                 color: #fff;
@@ -32,7 +37,9 @@
     <body>
         <main>
             <h1>Quick Sort</h1>
-            <p>B = 运行冒泡排序 | Q = 运行快速排序</p>
+            <p>
+                <button onclick="play('冒泡排序 Bubble Sort')">运行冒泡排序 [B]</button> <button onclick="play('快速排序 Quick Sort')">运行快速排序 [Q]</button>
+            </p>
         </main>
         <script src="/p5.js/p5.min.js"></script>
         <script src="/p5.js/p5.sound.min.js"></script>
