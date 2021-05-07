@@ -64,6 +64,10 @@ function play(name = '冒泡排序 Bubble Sort') {
 }
 
 const sorters = {
+    /**
+     * 冒泡排序 Bubble Sort
+     * @see https://en.wikipedia.org/wiki/Bubble_sort
+     */
     '冒泡排序 Bubble Sort': function* bubblesort() {
         let n = TOTAL
         while (n > 1) {
@@ -78,7 +82,15 @@ const sorters = {
         }
     },
 
-    /* Lomuto partition scheme */
+    /**
+     * 快速排序 Quick Sort
+     *
+     * Lomuto partition scheme
+     * @see https://en.wikipedia.org/wiki/Quicksort#Lomuto_partition_scheme
+     *
+     * @param {Number} low
+     * @param {Number} high
+     */
     '快速排序 Quick Sort (Lomuto)': function* quicksort(low = 0, high = TOTAL - 1) {
         function* partition(low, high) {
             const mid = Math.floor(low + (high - low) / 2)
@@ -108,7 +120,15 @@ const sorters = {
         }
     },
 
-    /* Hoare partition scheme */
+    /**
+     * 快速排序 Quick Sort
+     *
+     * Hoare partition scheme
+     * @see https://en.wikipedia.org/wiki/Quicksort#Hoare_partition_scheme
+     *
+     * @param {Number} low
+     * @param {Number} high
+     */
     '快速排序 Quick Sort (Hoare)': function* quicksort(low = 0, high = TOTAL - 1) {
         function* partition(low, high) {
             const mid = Math.floor(low + (high - low) / 2)
