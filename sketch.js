@@ -47,7 +47,7 @@ function keyPressed() {
             play('快速排序 Quick Sort (Lomuto)')
             break
         }
-        case 'q': {
+        case 'h': {
             play('快速排序 Quick Sort (Hoare)')
             break
         }
