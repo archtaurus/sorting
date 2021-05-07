@@ -1,6 +1,6 @@
 const WINDOW_WIDTH = 800
 const WINDOW_HEIGHT = 400
-const TOTAL = 100
+const TOTAL = 40
 const COLUMN_WIDTH = WINDOW_WIDTH / TOTAL
 const NUMBERS = new Array(TOTAL)
 let sorter, oscillator, start_time
@@ -8,6 +8,8 @@ let sorter, oscillator, start_time
 function setup() {
     createCanvas(WINDOW_WIDTH, WINDOW_HEIGHT)
     oscillator = new p5.Oscillator('sine')
+    textAlign(CENTER)
+    textSize(8)
     play()
 }
 
@@ -24,10 +26,15 @@ function draw() {
         oscillator.freq(freq, 0.1)
     }
     // 绘制数据
-    fill(0)
-    stroke(200)
     background(200)
-    for (let i = 0; i < TOTAL; i++) rect(i * COLUMN_WIDTH, height - NUMBERS[i], COLUMN_WIDTH, height)
+    for (let i = 0; i < TOTAL; i++) {
+        stroke(200)
+        fill(value === i ? 'red' : 'black')
+        rect(i * COLUMN_WIDTH, height - NUMBERS[i], COLUMN_WIDTH, height)
+        stroke(0)
+        fill('white')
+        text(NUMBERS[i].toFixed(0), i * COLUMN_WIDTH + COLUMN_WIDTH / 2, height - 4)
+    }
 }
 
 function keyPressed() {
@@ -36,8 +43,12 @@ function keyPressed() {
             play('冒泡排序 Bubble Sort')
             break
         }
+        case 'l': {
+            play('快速排序 Quick Sort 1')
+            break
+        }
         case 'q': {
-            play('快速排序 Quick Sort')
+            play('快速排序 Quick Sort 2')
             break
         }
     }
@@ -65,20 +76,24 @@ const sorters = {
             }
             n = m
         }
-        return
     },
-    '快速排序 Quick Sort': function* quicksort(low = 0, high = TOTAL - 1) {
+
+    /* Lomuto partition scheme */
+    '快速排序 Quick Sort 1': function* quicksort(low = 0, high = TOTAL - 1) {
         function* partition(low, high) {
-            let i = low
+            const mid = Math.floor((low + high) / 2)
+            if (NUMBERS[mid] < NUMBERS[low]) [NUMBERS[low], NUMBERS[mid]] = [NUMBERS[mid], NUMBERS[low]]
+            if (NUMBERS[high] < NUMBERS[low]) [NUMBERS[low], NUMBERS[high]] = [NUMBERS[high], NUMBERS[low]]
+            if (NUMBERS[mid] < NUMBERS[high]) [NUMBERS[high], NUMBERS[mid]] = [NUMBERS[mid], NUMBERS[high]]
             let pivot = NUMBERS[high]
-            for (let j = low; j <= high; j++) {
-                if (NUMBERS[j] < pivot) {
-                    ;[NUMBERS[i], NUMBERS[j], i] = [NUMBERS[j], NUMBERS[i], i + 1]
-                    yield i
+            for (let i = low; i <= high; i++) {
+                if (NUMBERS[i] < pivot) {
+                    ;[NUMBERS[low], NUMBERS[i]] = [NUMBERS[i], NUMBERS[low]]
+                    yield ++low
                 }
             }
-            ;[NUMBERS[i], NUMBERS[high]] = [NUMBERS[high], NUMBERS[i]]
-            return i
+            ;[NUMBERS[low], NUMBERS[high]] = [NUMBERS[high], NUMBERS[low]]
+            return low
         }
         if (low < high) {
             let pivot
@@ -93,6 +108,32 @@ const sorters = {
             yield* quicksort(low, pivot - 1)
             yield* quicksort(pivot + 1, high)
         }
-        return
+    },
+
+    /* Hoare partition scheme */
+    '快速排序 Quick Sort 2': function* quicksort(low = 0, high = TOTAL - 1) {
+        function* partition(low, high) {
+            let pivot = NUMBERS[Math.floor((low + high) / 2)]
+            while (true) {
+                while (low < high && NUMBERS[low] < pivot) ++low
+                while (low < high && NUMBERS[high] > pivot) --high
+                if (low >= high) return high
+                ;[NUMBERS[low], NUMBERS[high]] = [NUMBERS[high], NUMBERS[low]]
+                yield high
+            }
+        }
+        if (low < high) {
+            let pivot
+            const generator = partition(low, high)
+            while (true) {
+                const { value, done } = generator.next()
+                if (done) {
+                    pivot = value
+                    break
+                } else yield value
+            }
+            yield* quicksort(low, pivot)
+            yield* quicksort(pivot + 1, high)
+        }
     },
 }
