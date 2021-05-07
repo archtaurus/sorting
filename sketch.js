@@ -8,6 +8,7 @@ let sorter, oscillator, start_time
 function setup() {
     createCanvas(WINDOW_WIDTH, WINDOW_HEIGHT)
     oscillator = new p5.Oscillator('sine')
+    // frameRate(10)
     textAlign(CENTER)
     textSize(8)
     play()
@@ -55,7 +56,7 @@ function keyPressed() {
 }
 
 function play(name = '冒泡排序 Bubble Sort') {
-    for (let i = 0; i < NUMBERS.length; i++) NUMBERS[i] = random(height)
+    for (let i = 0; i < TOTAL; i++) NUMBERS[i] = random(height)
     document.querySelector('h1').innerText = name
     sorter = sorters[name]()
     start_time = Date.now()
@@ -81,16 +82,14 @@ const sorters = {
     /* Lomuto partition scheme */
     '快速排序 Quick Sort (Lomuto)': function* quicksort(low = 0, high = TOTAL - 1) {
         function* partition(low, high) {
-            const mid = Math.floor((low + high) / 2)
+            const mid = Math.floor(low + (high - low) / 2)
             if (NUMBERS[mid] < NUMBERS[low]) [NUMBERS[low], NUMBERS[mid]] = [NUMBERS[mid], NUMBERS[low]]
             if (NUMBERS[high] < NUMBERS[low]) [NUMBERS[low], NUMBERS[high]] = [NUMBERS[high], NUMBERS[low]]
             if (NUMBERS[mid] < NUMBERS[high]) [NUMBERS[high], NUMBERS[mid]] = [NUMBERS[mid], NUMBERS[high]]
             let pivot = NUMBERS[high]
             for (let i = low; i <= high; i++) {
-                if (NUMBERS[i] < pivot) {
-                    ;[NUMBERS[low], NUMBERS[i]] = [NUMBERS[i], NUMBERS[low]]
-                    yield ++low
-                }
+                if (NUMBERS[i] < pivot) [NUMBERS[low++], NUMBERS[i]] = [NUMBERS[i], NUMBERS[low]]
+                yield i
             }
             ;[NUMBERS[low], NUMBERS[high]] = [NUMBERS[high], NUMBERS[low]]
             return low
@@ -113,13 +112,13 @@ const sorters = {
     /* Hoare partition scheme */
     '快速排序 Quick Sort (Hoare)': function* quicksort(low = 0, high = TOTAL - 1) {
         function* partition(low, high) {
-            let pivot = NUMBERS[Math.floor((low + high) / 2)]
+            const mid = Math.floor(low + (high - low) / 2)
+            const pivot = NUMBERS[mid]
             while (true) {
-                while (low < high && NUMBERS[low] < pivot) ++low
-                while (low < high && NUMBERS[high] > pivot) --high
+                while (low < high && NUMBERS[low] < pivot) yield ++low
+                while (low < high && NUMBERS[high] > pivot) yield --high
                 if (low >= high) return high
                 ;[NUMBERS[low], NUMBERS[high]] = [NUMBERS[high], NUMBERS[low]]
-                yield high
             }
         }
         if (low < high) {
