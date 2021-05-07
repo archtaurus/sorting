@@ -44,11 +44,11 @@ function keyPressed() {
             break
         }
         case 'l': {
-            play('快速排序 Quick Sort 1')
+            play('快速排序 Quick Sort (Lomuto)')
             break
         }
         case 'q': {
-            play('快速排序 Quick Sort 2')
+            play('快速排序 Quick Sort (Hoare)')
             break
         }
     }
@@ -79,7 +79,7 @@ const sorters = {
     },
 
     /* Lomuto partition scheme */
-    '快速排序 Quick Sort 1': function* quicksort(low = 0, high = TOTAL - 1) {
+    '快速排序 Quick Sort (Lomuto)': function* quicksort(low = 0, high = TOTAL - 1) {
         function* partition(low, high) {
             const mid = Math.floor((low + high) / 2)
             if (NUMBERS[mid] < NUMBERS[low]) [NUMBERS[low], NUMBERS[mid]] = [NUMBERS[mid], NUMBERS[low]]
@@ -111,7 +111,7 @@ const sorters = {
     },
 
     /* Hoare partition scheme */
-    '快速排序 Quick Sort 2': function* quicksort(low = 0, high = TOTAL - 1) {
+    '快速排序 Quick Sort (Hoare)': function* quicksort(low = 0, high = TOTAL - 1) {
         function* partition(low, high) {
             let pivot = NUMBERS[Math.floor((low + high) / 2)]
             while (true) {
