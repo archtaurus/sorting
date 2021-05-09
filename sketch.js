@@ -4,18 +4,19 @@ const TOTAL = 40
 const COLUMN_WIDTH = WINDOW_WIDTH / TOTAL
 const NUMBERS = new Array(TOTAL)
 const DEFAULT = '冒泡排序 Bubble Sort'
-const FRAMERATE = -1
-let sorter, oscillator, swaps
+let sliderFrameRate, sorter, oscillator, total_swaps
 
 function setup() {
     createCanvas(WINDOW_WIDTH, WINDOW_HEIGHT)
+    sliderFrameRate = createSlider(1, 30, 10)
+    sliderFrameRate.position(10, 10)
     oscillator = new p5.Oscillator('sine')
-    frameRate(FRAMERATE)
     play(DEFAULT)
 }
 
 function draw() {
-    swaps++
+    frameRate(sliderFrameRate.value())
+    total_swaps++
     // 更新数据
     const { value, done } = sorter.next()
     // 绘制数据
@@ -38,7 +39,7 @@ function draw() {
         fill(0)
         textSize(16)
         textAlign(LEFT)
-        text(`数值互换: ${swaps} 次`, 20, 30)
+        text(`数值互换: ${total_swaps} 次`, 20, 30)
     }
     if (done) {
         oscillator.stop()
@@ -71,7 +72,7 @@ function play(name = '冒泡排序 Bubble Sort') {
     document.querySelector('h1').innerText = name
     sorter = sorters[name](NUMBERS)
     oscillator.start()
-    swaps = 0
+    total_swaps = 0
     loop()
 }
 
