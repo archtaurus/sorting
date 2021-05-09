@@ -3,37 +3,48 @@ const WINDOW_HEIGHT = 400
 const TOTAL = 40
 const COLUMN_WIDTH = WINDOW_WIDTH / TOTAL
 const NUMBERS = new Array(TOTAL)
+const DEFAULT = '冒泡排序 Bubble Sort'
+const FRAMERATE = -1
 let sorter, oscillator, start_time
 
 function setup() {
     createCanvas(WINDOW_WIDTH, WINDOW_HEIGHT)
     oscillator = new p5.Oscillator('sine')
-    textAlign(CENTER)
-    textSize(8)
-    play()
+    frameRate(FRAMERATE)
+    play(DEFAULT)
 }
 
 function draw() {
     // 更新数据
     const { value, done } = sorter.next()
-    if (done) {
-        const time_cost = (Date.now() - start_time) / 1000
-        document.querySelector('h1').innerText += ` (完成时间: ${time_cost} 秒)`
-        oscillator.stop()
-        noLoop()
-    } else {
-        const freq = map(value, 0, TOTAL - 1, 256, 2048)
-        oscillator.freq(freq, 0.1)
-    }
     // 绘制数据
     background(200)
     for (let i = 0; i < TOTAL; i++) {
         stroke(200)
-        fill(value === i ? 'red' : 'black')
+        let color = 'black'
+        if (value) {
+            const index = value.indexOf(i)
+            if (index !== -1) color = ['red', 'blue', 'green'][index]
+        }
+        fill(color)
         rect(i * COLUMN_WIDTH, height - NUMBERS[i], COLUMN_WIDTH, height)
-        stroke(0)
+        noStroke()
         fill('white')
+        textSize(8)
+        textAlign(CENTER)
         text(NUMBERS[i].toFixed(0), i * COLUMN_WIDTH + COLUMN_WIDTH / 2, height - 4)
+    }
+    if (done) {
+        noStroke()
+        fill(0)
+        textSize(16)
+        const time_cost = (Date.now() - start_time) / 1000
+        text(`完成时间: ${time_cost} 秒`, 100, 50)
+        oscillator.stop()
+        noLoop()
+    } else if (value) {
+        const freq = map(value[0], 0, TOTAL - 1, 256, 2048)
+        oscillator.freq(freq, 0.1)
     }
 }
 
@@ -75,8 +86,9 @@ const sorters = {
             for (let i = 1; i < n; i++) {
                 if (NUMBERS[i - 1] > NUMBERS[i]) {
                     ;[NUMBERS[i - 1], NUMBERS[i]] = [NUMBERS[i], NUMBERS[i - 1]]
-                    yield (m = i)
+                    m = i
                 }
+                yield [i, m, n]
             }
             n = m
         }
@@ -100,7 +112,7 @@ const sorters = {
             let pivot = NUMBERS[high]
             for (let i = low; i <= high; i++) {
                 if (NUMBERS[i] < pivot) [NUMBERS[low++], NUMBERS[i]] = [NUMBERS[i], NUMBERS[low]]
-                yield i
+                yield [i, low, high]
             }
             ;[NUMBERS[low], NUMBERS[high]] = [NUMBERS[high], NUMBERS[low]]
             return low
@@ -134,8 +146,8 @@ const sorters = {
             const mid = Math.floor(low + (high - low) / 2)
             const pivot = NUMBERS[mid]
             while (true) {
-                while (low < high && NUMBERS[low] < pivot) yield ++low
-                while (low < high && NUMBERS[high] > pivot) yield --high
+                while (low < high && NUMBERS[low] < pivot) yield [++low, high, mid]
+                while (low < high && NUMBERS[high] > pivot) yield [low, --high, mid]
                 if (low >= high) return high
                 ;[NUMBERS[low], NUMBERS[high]] = [NUMBERS[high], NUMBERS[low]]
             }
