@@ -1,8 +1,8 @@
 const WINDOW_WIDTH = 800
 const WINDOW_HEIGHT = 400
 const TOTAL = 40
-const COLUMN_WIDTH = WINDOW_WIDTH / TOTAL
 const NUMBERS = new Array(TOTAL)
+const COLUMN_WIDTH = WINDOW_WIDTH / TOTAL
 const DEFAULT = '冒泡排序 Bubble Sort'
 let sliderFrameRate, sorter, oscillator, total_swaps
 
