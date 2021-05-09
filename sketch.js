@@ -38,7 +38,7 @@ function draw() {
         fill(0)
         textSize(16)
         textAlign(LEFT)
-        text(`数值交换次数: ${swaps}`, 20, 30)
+        text(`数值互换: ${swaps} 次`, 20, 30)
     }
     if (done) {
         oscillator.stop()
