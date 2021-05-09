@@ -68,7 +68,7 @@ function keyPressed() {
 function play(name = '冒泡排序 Bubble Sort') {
     for (let i = 0; i < TOTAL; i++) NUMBERS[i] = random(height)
     document.querySelector('h1').innerText = name
-    sorter = sorters[name]()
+    sorter = sorters[name](NUMBERS)
     start_time = Date.now()
     oscillator.start()
     loop()
@@ -79,13 +79,13 @@ const sorters = {
      * 冒泡排序 Bubble Sort
      * @see https://en.wikipedia.org/wiki/Bubble_sort
      */
-    '冒泡排序 Bubble Sort': function* bubblesort() {
+    '冒泡排序 Bubble Sort': function* bubblesort(list) {
         let n = TOTAL
         while (n > 1) {
             let m = 0
             for (let i = 1; i < n; i++) {
-                if (NUMBERS[i - 1] > NUMBERS[i]) {
-                    ;[NUMBERS[i - 1], NUMBERS[i]] = [NUMBERS[i], NUMBERS[i - 1]]
+                if (list[i - 1] > list[i]) {
+                    ;[list[i - 1], list[i]] = [list[i], list[i - 1]]
                     m = i
                 }
                 yield [i, m, n]
@@ -95,75 +95,84 @@ const sorters = {
     },
 
     /**
-     * 快速排序 Quick Sort
-     *
-     * Lomuto partition scheme
+     * 快速排序 Quick Sort - Lomuto partition scheme
      * @see https://en.wikipedia.org/wiki/Quicksort#Lomuto_partition_scheme
-     *
+     * @param {Array} array
      * @param {Number} low
      * @param {Number} high
+     * @returns {Generator}
      */
-    '快速排序 Quick Sort (Lomuto)': function* quicksort(low = 0, high = TOTAL - 1) {
-        function* partition(low, high) {
+    '快速排序 Quick Sort (Lomuto)': function* quickSortLomuto(array, low = 0, high = TOTAL - 1) {
+        if (low < high) {
+            let pivot = undefined
+            const generator = partitionLomuto(array, low, high)
+            while (pivot === undefined) {
+                const { value, done } = generator.next()
+                if (done) pivot = value
+                else yield value
+            }
+            yield* quickSortLomuto(array, low, pivot - 1)
+            yield* quickSortLomuto(array, pivot + 1, high)
+        }
+        /**
+         * Lomuto partition scheme
+         * @param {Array} array
+         * @param {Number} low
+         * @param {Number} high
+         * @returns {Number} pivot
+         */
+        function* partitionLomuto(array, low, high) {
             const mid = Math.floor(low + (high - low) / 2)
-            if (NUMBERS[mid] < NUMBERS[low]) [NUMBERS[low], NUMBERS[mid]] = [NUMBERS[mid], NUMBERS[low]]
-            if (NUMBERS[high] < NUMBERS[low]) [NUMBERS[low], NUMBERS[high]] = [NUMBERS[high], NUMBERS[low]]
-            if (NUMBERS[mid] < NUMBERS[high]) [NUMBERS[high], NUMBERS[mid]] = [NUMBERS[mid], NUMBERS[high]]
-            let pivot = NUMBERS[high]
+            if (array[mid] < array[low]) [array[low], array[mid]] = [array[mid], array[low]]
+            if (array[high] < array[low]) [array[low], array[high]] = [array[high], array[low]]
+            if (array[mid] < array[high]) [array[high], array[mid]] = [array[mid], array[high]]
+            let pivot = array[high]
             for (let i = low; i <= high; i++) {
-                if (NUMBERS[i] < pivot) [NUMBERS[low++], NUMBERS[i]] = [NUMBERS[i], NUMBERS[low]]
+                if (array[i] < pivot) [array[low++], array[i]] = [array[i], array[low]]
                 yield [i, low, high]
             }
-            ;[NUMBERS[low], NUMBERS[high]] = [NUMBERS[high], NUMBERS[low]]
+            ;[array[low], array[high]] = [array[high], array[low]]
             return low
-        }
-        if (low < high) {
-            let pivot
-            const generator = partition(low, high)
-            while (true) {
-                const { value, done } = generator.next()
-                if (done) {
-                    pivot = value
-                    break
-                } else yield value
-            }
-            yield* quicksort(low, pivot - 1)
-            yield* quicksort(pivot + 1, high)
         }
     },
 
     /**
-     * 快速排序 Quick Sort
-     *
-     * Hoare partition scheme
+     * 快速排序 Quick Sort - Hoare partition scheme
      * @see https://en.wikipedia.org/wiki/Quicksort#Hoare_partition_scheme
-     *
+     * @param {Array} array
      * @param {Number} low
      * @param {Number} high
+     * @returns {Generator}
      */
-    '快速排序 Quick Sort (Hoare)': function* quicksort(low = 0, high = TOTAL - 1) {
-        function* partition(low, high) {
-            const mid = Math.floor(low + (high - low) / 2)
-            const pivot = NUMBERS[mid]
-            while (true) {
-                while (low < high && NUMBERS[low] < pivot) yield [++low, high, mid]
-                while (low < high && NUMBERS[high] > pivot) yield [low, --high, mid]
-                if (low >= high) return high
-                ;[NUMBERS[low], NUMBERS[high]] = [NUMBERS[high], NUMBERS[low]]
-            }
-        }
+    '快速排序 Quick Sort (Hoare)': function* quickSortHoare(array, low = 0, high = TOTAL - 1) {
         if (low < high) {
-            let pivot
-            const generator = partition(low, high)
-            while (true) {
+            let pivot = undefined
+            const generator = partitionHoare(array, low, high)
+            while (pivot === undefined) {
                 const { value, done } = generator.next()
-                if (done) {
-                    pivot = value
-                    break
-                } else yield value
+                if (done) pivot = value
+                else yield value
             }
-            yield* quicksort(low, pivot)
-            yield* quicksort(pivot + 1, high)
+            yield* quickSortHoare(array, low, pivot)
+            yield* quickSortHoare(array, pivot + 1, high)
+        }
+        /**
+         * Hoare partition scheme
+         * @param {Array} array
+         * @param {Number} low
+         * @param {Number} high
+         * @returns {Number} pivot
+         */
+        function* partitionHoare(array, low, high) {
+            const mid = Math.floor(low + (high - low) / 2)
+            const pivot = array[mid]
+            while (true) {
+                while (low < high && array[low] < pivot) ++low
+                while (low < high && array[high] > pivot) --high
+                if (low >= high) return high
+                ;[array[low], array[high]] = [array[high], array[low]]
+                yield [low, high, mid]
+            }
         }
     },
 }
