@@ -8,7 +8,7 @@ let sliderFrameRate, sorter, oscillator, total_swaps
 
 function setup() {
     createCanvas(WINDOW_WIDTH, WINDOW_HEIGHT)
-    sliderFrameRate = createSlider(1, 30, 10)
+    sliderFrameRate = createSlider(1, 50, 20)
     sliderFrameRate.position(10, 10)
     oscillator = new p5.Oscillator('sine')
     play(DEFAULT)
