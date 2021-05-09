@@ -16,7 +16,6 @@ function setup() {
 
 function draw() {
     frameRate(sliderFrameRate.value())
-    total_swaps++
     // 更新数据
     const { value, done } = sorter.next()
     // 绘制数据
@@ -47,6 +46,7 @@ function draw() {
     } else if (value) {
         const freq = map(value[0], 0, TOTAL - 1, 256, 2048)
         oscillator.freq(freq, 0.1)
+        total_swaps++
     }
 }
 
