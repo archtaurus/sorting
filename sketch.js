@@ -5,7 +5,7 @@ const COLUMN_WIDTH = WINDOW_WIDTH / TOTAL
 const NUMBERS = new Array(TOTAL)
 const DEFAULT = '冒泡排序 Bubble Sort'
 const FRAMERATE = -1
-let sorter, oscillator, start_time
+let sorter, oscillator, swaps
 
 function setup() {
     createCanvas(WINDOW_WIDTH, WINDOW_HEIGHT)
@@ -15,6 +15,7 @@ function setup() {
 }
 
 function draw() {
+    swaps++
     // 更新数据
     const { value, done } = sorter.next()
     // 绘制数据
@@ -33,13 +34,13 @@ function draw() {
         textSize(8)
         textAlign(CENTER)
         text(NUMBERS[i].toFixed(0), i * COLUMN_WIDTH + COLUMN_WIDTH / 2, height - 4)
-    }
-    if (done) {
-        noStroke()
+        stroke(200)
         fill(0)
         textSize(16)
-        const time_cost = (Date.now() - start_time) / 1000
-        text(`完成时间: ${time_cost} 秒`, 100, 50)
+        textAlign(LEFT)
+        text(`数值交换次数: ${swaps}`, 20, 30)
+    }
+    if (done) {
         oscillator.stop()
         noLoop()
     } else if (value) {
@@ -69,8 +70,8 @@ function play(name = '冒泡排序 Bubble Sort') {
     for (let i = 0; i < TOTAL; i++) NUMBERS[i] = random(height)
     document.querySelector('h1').innerText = name
     sorter = sorters[name](NUMBERS)
-    start_time = Date.now()
     oscillator.start()
+    swaps = 0
     loop()
 }
 
@@ -86,9 +87,9 @@ const sorters = {
             for (let i = 1; i < n; i++) {
                 if (list[i - 1] > list[i]) {
                     ;[list[i - 1], list[i]] = [list[i], list[i - 1]]
+                    yield [i, m, n]
                     m = i
                 }
-                yield [i, m, n]
             }
             n = m
         }
